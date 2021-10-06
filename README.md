@@ -39,7 +39,7 @@ username:password
 
     $ java -jar schoolcard.jar /home/user/document/giorgos.covid
 
-Αν ο ChromeDriver είναι δεν είναι στο PATH, πριν την παραπάνω εντολή δηλώστε στη μεταβλητή περιβάλλοντος `CHROME_DRIVER` που βρίσκεται:
+Αν ο ChromeDriver δεν είναι στο PATH, πριν την παραπάνω εντολή δηλώστε στη μεταβλητή περιβάλλοντος `CHROME_DRIVER` που βρίσκεται:
 
     $ export CHROME_DRIVER=/home/user/bin/chromedriver
 
