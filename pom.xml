@@ -14,13 +14,25 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <slf4j-simple.version>1.7.32</slf4j-simple.version>
+        <selenium-chrome-driver.version>4.0.0-rc-2</selenium-chrome-driver.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-chrome-driver</artifactId>
-            <version>4.0.0-rc-2</version>
+            <version>${selenium-chrome-driver.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j-simple.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>${slf4j-simple.version}</version>
         </dependency>
     </dependencies>
 
@@ -44,6 +56,8 @@
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
+                            <outputDirectory>${project.basedir}</outputDirectory>
+                            <finalName>schoolcard</finalName>
                         </configuration>
                     </execution>
                 </executions>
