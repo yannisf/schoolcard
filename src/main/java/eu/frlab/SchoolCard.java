@@ -1,8 +1,11 @@
 package eu.frlab;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -10,13 +13,20 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class SchoolCard {
 
-    private static final long WAIT_TIME = 1000;
+    private static final long MAX_WAIT_TIME = 3000;
 
     private static final Logger LOG = LoggerFactory.getLogger(SchoolCard.class);
+
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
 
     public static void main(String[] args) throws Exception {
         String home = System.getenv("HOME");
@@ -29,18 +39,6 @@ public class SchoolCard {
         LOG.info("Preparing COVID school card for [{}]", kid[0]);
         SchoolCard schoolCard = new SchoolCard();
         schoolCard.execute(gsis, kid);
-        System.exit(0);
-    }
-
-    private WebDriver getDriver() {
-        if (System.getenv("CHROME_DRIVER") != null)
-            System.setProperty("webdriver.chrome.driver", System.getenv("CHROME_DRIVER"));
-
-        System.setProperty("webdriver.chrome.silentOutput", "true");
-
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
-        return new ChromeDriver();
     }
 
     private static void gsisCheck(Path gsisPath) {
@@ -64,43 +62,43 @@ public class SchoolCard {
         }
     }
 
-    private void execute(String[] gsis, String[] kid) throws Exception {
+    private void execute(String[] gsis, String[] kid) {
 
         WebDriver driver = getDriver();
+        FluentWait<WebDriver> wait = getWait(driver);
+
         LOG.info("Open gov.gr COVID19 School Card web page");
         String url = "https://covid19-self-test.services.gov.gr/templates/COVID19-SCHOOL-CARD2/create/";
+        driver.manage().window().maximize();
         driver.get(url);
-        Thread.sleep(WAIT_TIME);
 
         LOG.info("Accept cookies");
-        driver.findElement(By.xpath("//button[span[text()[contains(.,'Αποδοχή')]]]")).click();
-        Thread.sleep(WAIT_TIME);
+        By acceptCookiesControl = By.xpath("//button[span[text()[contains(.,'Αποδοχή')]]]");
+        wait.until(ExpectedConditions.elementToBeClickable(acceptCookiesControl));
+        driver.findElement(acceptCookiesControl).click();
 
         LOG.info("Login on service");
         driver.findElement(By.cssSelector("a[href='/api/login/']")).click();
-        Thread.sleep(WAIT_TIME);
 
         LOG.info("Select login authenticator (GSIS)");
         driver.findElement(By.xpath("//button[span[text()[contains(.,'ΓΓΠΣΔΔ')]]]")).click();
-        Thread.sleep(WAIT_TIME);
 
         LOG.info("Enter credentials");
         driver.findElement(By.name("j_username")).sendKeys(gsis[0]);
         driver.findElement(By.name("j_password")).sendKeys(gsis[1]);
         driver.findElement(By.id("btn-login-submit")).click();
-        Thread.sleep(WAIT_TIME);
 
         LOG.info("Review GSIS data");
         try {
             driver.findElement(By.id("btn-submit")).click();
-            Thread.sleep(WAIT_TIME);
         } catch (Exception ignored) {
             LOG.info("Review GSIS data (skipped)");
         }
 
         LOG.info("Review personal information");
-        driver.findElement(By.cssSelector("button[label='Συνέχεια']")).click();
-        Thread.sleep(WAIT_TIME);
+        By reviewPersonalInfControl = By.cssSelector("button[label='Συνέχεια']");
+        wait.until(ExpectedConditions.elementToBeClickable(reviewPersonalInfControl));
+        driver.findElement(reviewPersonalInfControl).click();
 
         LOG.info("Enter kids personal information");
         driver.findElement(By.name("child_firstname")).sendKeys(kid[0]);
@@ -111,7 +109,6 @@ public class SchoolCard {
         driver.findElement(By.name("child_birth_date-month")).sendKeys(kid[5]);
         driver.findElement(By.name("child_birth_date-year")).sendKeys(kid[6]);
         driver.findElement(By.cssSelector("form")).submit();
-        Thread.sleep(WAIT_TIME);
 
         LOG.info("Enter kids COVID test information");
         LocalDate date = LocalDate.now();
@@ -123,12 +120,29 @@ public class SchoolCard {
         driver.findElement(By.cssSelector("#menu-test_result > div.MuiPaper-root.MuiMenu-paper.MuiPopover-paper.MuiPaper-elevation8.MuiPaper-rounded > ul > li:nth-child(1)")).click();
 
         LOG.info("Submit form");
-        Thread.sleep(WAIT_TIME);
         driver.findElement(By.cssSelector("form")).submit();
 
         LOG.info("Request print");
-        Thread.sleep(WAIT_TIME);
-        driver.findElement(By.cssSelector("button[label='Εκτύπωση']")).click();
+        By printButton = By.cssSelector("button[label='Εκτύπωση']");
+        wait.until(ExpectedConditions.elementToBeClickable(printButton));
+        driver.findElement(printButton).click();
+    }
+
+    private WebDriver getDriver() {
+        if (System.getenv("CHROME_DRIVER") != null)
+            System.setProperty("webdriver.chrome.driver", System.getenv("CHROME_DRIVER"));
+
+        System.setProperty("webdriver.chrome.silentOutput", "true");
+
+        return new ChromeDriver();
+    }
+
+    private FluentWait<WebDriver> getWait(WebDriver driver) {
+        FluentWait<WebDriver> wait = new FluentWait<>(driver);
+        wait.withTimeout(Duration.of(MAX_WAIT_TIME, ChronoUnit.MILLIS));
+        wait.pollingEvery(Duration.of(100, ChronoUnit.MILLIS));
+        wait.ignoring(NoSuchElementException.class);
+        return wait;
     }
 
 }
