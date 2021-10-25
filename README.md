@@ -8,7 +8,7 @@
 Στηρίζεται σε Selenium και χρησιμοποιεί ChromeDriver. 
 Απαιτείται η ύπαρξη Java και Chrome ή Chromium στον υπολογιστή σας, και η εγκατάσταση του [ChromeDriver](https://chromedriver.chromium.org/downloads).
 
-Μπορείτε να κατεβάσετε ένα προετοιμασμένο εκτελέσιμο εδω: https://github.com/yannisf/schoolcard/releases/download/1.0/schoolcard.jar
+Μπορείτε να κατεβάσετε ένα προετοιμασμένο εκτελέσιμο εδω: https://github.com/yannisf/schoolcard/releases/download/v2.0/schoolcard.jar
 
 ## Περιβάλλον
 
