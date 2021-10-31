@@ -15,26 +15,24 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <slf4j-simple.version>1.7.32</slf4j-simple.version>
-        <selenium-chrome-driver.version>4.0.0</selenium-chrome-driver.version>
+        <selenium.version>4.0.0</selenium.version>
     </properties>
 
     <dependencies>
-<!--
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-firefox-driver</artifactId>
-            <version>${selenium-chrome-driver.version}</version>
+            <version>${selenium.version}</version>
         </dependency>
--->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-chrome-driver</artifactId>
-            <version>${selenium-chrome-driver.version}</version>
+            <version>${selenium.version}</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-support</artifactId>
-            <version>${selenium-chrome-driver.version}</version>
+            <version>${selenium.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
