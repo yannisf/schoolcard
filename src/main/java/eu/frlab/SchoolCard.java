@@ -37,7 +37,7 @@ public class SchoolCard {
         argCheck(args);
         String[] school = Files.readAllLines(Paths.get(args[0])).get(0).split(":");
         String[] kid = Files.readAllLines(Paths.get(args[0])).get(1).split(":");
-        infoCheck(kid);
+        infoCheck(school, kid);
         LOG.info("Preparing COVID school card for [{}]", kid[0]);
         SchoolCard schoolCard = new SchoolCard();
         schoolCard.execute(gsis, school, kid);
@@ -45,21 +45,25 @@ public class SchoolCard {
 
     private static void gsisCheck(Path gsisPath) {
         if (!(Files.exists(gsisPath) && Files.isReadable(gsisPath))) {
-            LOG.error("A file, named '.gsis', with GSIS (TaxisNet) credentials in the format 'username:password' does not exist in your home directory.");
+            LOG.error("Δεν βρέθηκε το αρχείο '.gsis', με τα διαπιστευτήρια της ΓΓΠΣ (πληροφορίες: (https://github.com/yannisf/schoolcard/blob/master/README.md).");
             System.exit(1);
         }
     }
 
     private static void argCheck(String[] args) {
         if (args.length != 1) {
-            LOG.error("Exactly one parameter is expected, with the path of the file containing the kid's information in the format 'NAME:SURNAME:FATHER_NAME:MOTHER_NAME:DAY_OF_BIRTH:MONTH_OF_BIRTH:YEAR_OF_BIRTH:AMKA'.");
+            LOG.error("Ακριβώς μια παράμετρος αναμένεται, με τη διαδρομή του αρχείου που περιλαμβάνει τις πληροφορίες του σχολείου και του παιδιού (πληροφορίες: https://github.com/yannisf/schoolcard/blob/master/README.md).");
             System.exit(1);
         }
     }
 
-    private static void infoCheck(String[] kid) {
-        if (kid.length != 8) {
-            LOG.error("Kid's information must be in the format 'NAME:SURNAME:FATHER_NAME:MOTHER_NAME:DAY_OF_BIRTH:MONTH_OF_BIRTH:YEAR_OF_BIRTH:AMKA'.");
+    private static void infoCheck(String[] school, String[] kid) {
+        if (school.length != 6) {
+            LOG.error("Οι πληροφορίες του σχολείου δεν έχουν την αναμενόμενη μορφή.");
+            System.exit(1);
+        }
+        if (kid.length != 6) {
+            LOG.error("Οι πληροφορίες του παιδιού δεν έχουν την αναμενόμενη μορφή.");
             System.exit(1);
         }
     }
@@ -180,18 +184,18 @@ public class SchoolCard {
         LOG.info("Enter kids personal information");
         driver.findElement(By.name("input_firstname")).sendKeys(kid[0]);
         driver.findElement(By.name("input_lastname")).sendKeys(kid[1]);
-        driver.findElement(By.name("input_dob-day")).sendKeys(kid[4]);
-        driver.findElement(By.name("input_dob-month")).sendKeys(kid[5]);
-        driver.findElement(By.name("input_dob-year")).sendKeys(kid[6]);
-        driver.findElement(By.name("input_amka")).sendKeys(kid[7]);
+        driver.findElement(By.name("input_dob-day")).sendKeys(kid[2]);
+        driver.findElement(By.name("input_dob-month")).sendKeys(kid[3]);
+        driver.findElement(By.name("input_dob-year")).sendKeys(kid[4]);
+        driver.findElement(By.name("input_amka")).sendKeys(kid[5]);
 
-        LOG.info("Enter kids COVID test information");
+        LOG.info("Enter kids COVID test date (today)");
         LocalDate date = LocalDate.now();
         driver.findElement(By.name("self_test_date-day")).sendKeys(String.valueOf(date.getDayOfMonth()));
         driver.findElement(By.name("self_test_date-month")).sendKeys(String.valueOf(date.getMonthValue()));
         driver.findElement(By.name("self_test_date-year")).sendKeys(String.valueOf(date.getYear()));
 
-        LOG.info("Enter COVID test result");
+        LOG.info("Enter COVID test result (negative)");
         By covidResult = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(8) > div:nth-child(2) > div > div > div");
         wait.until(ExpectedConditions.elementToBeClickable(covidResult));
         driver.findElement(covidResult).click();
@@ -201,8 +205,8 @@ public class SchoolCard {
         wait.until(ExpectedConditions.presenceOfElementLocated(covidResultOption));
         driver.findElement(covidResultOption).click();
 
-        LOG.info("Submit form");
-        driver.findElement(By.xpath("//div[text()[contains(.,'Υποβολή')]]")).click();
+//        LOG.info("Submit form");
+//        driver.findElement(By.xpath("//div[text()[contains(.,'Υποβολή')]]")).click();
 
 //        LOG.info("Request print");
 //        By printButton = By.cssSelector("button[label='Εκτύπωση']");

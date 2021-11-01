@@ -6,7 +6,7 @@
 
     <groupId>eu.frlab</groupId>
     <artifactId>schoolcard</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>3.1-SNAPSHOT</version>
 
     <name>SchoolCard</name>
 
@@ -72,10 +72,7 @@
                     </execution>
                 </executions>
             </plugin>
-
-
         </plugins>
-
 
         <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
             <plugins>
