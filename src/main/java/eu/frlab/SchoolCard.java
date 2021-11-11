@@ -1,222 +1,207 @@
 package eu.frlab;
 
+import eu.frlab.helper.CliHelper;
+import eu.frlab.helper.DataParser;
+import eu.frlab.helper.ParsedOptions;
+import eu.frlab.model.CredentialsDataModel;
+import eu.frlab.model.KidDataModel;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 public class SchoolCard {
 
-    private static final long MAX_WAIT_TIME = 15000;
-
-    private static final Logger LOG = LoggerFactory.getLogger(SchoolCard.class);
-
     static {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
     }
 
+    private static final Logger LOG = LoggerFactory.getLogger(SchoolCard.class);
+
     public static void main(String[] args) throws Exception {
-        String home = System.getenv("HOME");
-        Path gsisPath = Paths.get(home + "/.gsis");
-        gsisCheck(gsisPath);
-        String[] gsis = Files.readAllLines(gsisPath).get(0).split(":");
-        argCheck(args);
-        String[] school = Files.readAllLines(Paths.get(args[0])).get(0).split(":");
-        String[] kid = Files.readAllLines(Paths.get(args[0])).get(1).split(":");
-        infoCheck(school, kid);
-        LOG.info("Preparing COVID school card for [{}]", kid[0]);
+        CliHelper cliHelper = new CliHelper(args);
+        ParsedOptions parsedOptions = cliHelper.getParsedOptions();
+        cliHelper.handleHelp();
+
+        CredentialsDataModel credentials = DataParser.parseCredentialsData(parsedOptions.getCredentials());
+        KidDataModel kid = DataParser.parseKidData(parsedOptions.getKid());
+
+        LOG.info("Προετοιμασία έκδοσης σχολικής κάρτας COVID για [{}]", kid.getKidFullName());
+
         SchoolCard schoolCard = new SchoolCard();
-        schoolCard.execute(gsis, school, kid);
+        schoolCard.execute(parsedOptions, credentials, kid);
     }
 
-    private static void gsisCheck(Path gsisPath) {
-        if (!(Files.exists(gsisPath) && Files.isReadable(gsisPath))) {
-            LOG.error("Δεν βρέθηκε το αρχείο '.gsis', με τα διαπιστευτήρια της ΓΓΠΣ (πληροφορίες: (https://github.com/yannisf/schoolcard/blob/master/README.md).");
-            System.exit(1);
-        }
-    }
+    private void execute(ParsedOptions parsedOptions, CredentialsDataModel credentials, KidDataModel kid) throws InterruptedException {
 
-    private static void argCheck(String[] args) {
-        if (args.length != 1) {
-            LOG.error("Ακριβώς μια παράμετρος αναμένεται, με τη διαδρομή του αρχείου που περιλαμβάνει τις πληροφορίες του σχολείου και του παιδιού (πληροφορίες: https://github.com/yannisf/schoolcard/blob/master/README.md).");
-            System.exit(1);
-        }
-    }
+        WebDriver driver = getDriver(parsedOptions);
+        driver.manage().timeouts().implicitlyWait(Duration.of(5, ChronoUnit.SECONDS));
+        long customWait = parsedOptions.getWait();
 
-    private static void infoCheck(String[] school, String[] kid) {
-        if (school.length != 6) {
-            LOG.error("Οι πληροφορίες του σχολείου δεν έχουν την αναμενόμενη μορφή.");
-            System.exit(1);
-        }
-        if (kid.length != 6) {
-            LOG.error("Οι πληροφορίες του παιδιού δεν έχουν την αναμενόμενη μορφή.");
-            System.exit(1);
-        }
-    }
-
-    private void execute(String[] gsis, String[] school, String[] kid) throws InterruptedException {
-
-        WebDriver driver = getDriver();
-        FluentWait<WebDriver> wait = getWait(driver);
-
-        LOG.info("Open edupass.gov.gr");
+        LOG.info("Άνοιγμα σελίδας edupass.gov.gr");
         String url = "https://edupass.gov.gr/";
         driver.manage().window().maximize();
         driver.get(url);
 
-        LOG.info("Let's start");
+        LOG.info("Ας ξεκινήσουμε");
         driver.findElement(By.xpath("//span[text()[contains(.,'Ξεκινήστε εδώ')]]")).click();
+        Thread.sleep(customWait);
 
-        LOG.info("Select school level");
-        Thread.sleep(500L);
+        LOG.info("Επιλογή εκπαιδευτικής βαθμίδας");
         driver.findElement(By.xpath("//input[@value='schools']")).click();
-        Thread.sleep(500L);
-        driver.findElement(By.xpath("//span[text()[contains(.,'Συνέχεια')]]")).click();
+        Thread.sleep(customWait);
 
-        LOG.info("Select option type");
-        Thread.sleep(500L);
+        driver.findElement(By.xpath("//span[text()[contains(.,'Συνέχεια')]]")).click();
+        Thread.sleep(customWait);
+
+        LOG.info("Επιλογή σχολικής κάρτας");
         driver.findElement(By.xpath("//input[@value='studentCard']")).click();
-        Thread.sleep(500L);
+        Thread.sleep(customWait);
+
         driver.findElement(By.xpath("//span[text()[contains(.,'Συνέχεια')]]")).click();
+        Thread.sleep(customWait);
 
-        LOG.info("Accept cookies");
+        LOG.info("Αποδοχή cookies");
         By acceptCookiesControl = By.xpath("//button[span[text()[contains(.,'Αποδοχή')]]]");
-        wait.until(ExpectedConditions.elementToBeClickable(acceptCookiesControl));
         driver.findElement(acceptCookiesControl).click();
+        Thread.sleep(customWait);
 
-        LOG.info("Login on service");
+        LOG.info("Αυθεντικοποίηση");
         driver.findElement(By.cssSelector("a[href='/api/login/']")).click();
 
-        LOG.info("Select login authenticator (GSIS)");
+        LOG.info("Επιλογή υπηρεσίας αυθεντικοποίησης (ΓΓΠΣΔΔ)");
         driver.findElement(By.xpath("//button[span[text()[contains(.,'ΓΓΠΣΔΔ')]]]")).click();
 
-        LOG.info("Enter credentials");
-        driver.findElement(By.name("j_username")).sendKeys(gsis[0]);
-        driver.findElement(By.name("j_password")).sendKeys(gsis[1]);
+        LOG.info("Εισαγωγή διαπιστευτηρίων");
+        driver.findElement(By.name("j_username")).sendKeys(credentials.getUsername());
+        driver.findElement(By.name("j_password")).sendKeys(credentials.getPassword());
         driver.findElement(By.id("btn-login-submit")).click();
 
-        LOG.info("Review GSIS data");
+        LOG.info("Ανασκόπηση δεδομένων ΓΓΠΣΔΔ");
         try {
             driver.findElement(By.id("btn-submit")).click();
         } catch (Exception ignored) {
-            LOG.info("Review GSIS data (skipped)");
+            LOG.info("Ανασκόπηση δεδομένων ΓΓΠΣΔΔ (παραλείφθηκε)");
         }
 
-        LOG.info("Review personal information");
+        LOG.info("Ανασκόπηση προσωπικών δεδομένων");
         By reviewPersonalInfControl = By.cssSelector("button[label='Συνέχεια']");
-        wait.until(ExpectedConditions.elementToBeClickable(reviewPersonalInfControl));
         driver.findElement(reviewPersonalInfControl).click();
+        Thread.sleep(customWait);
 
-        LOG.info("Choose school region");
+        String xpathContainsFormat = "//li[text()[contains(.,'%s')]]";
+
+        LOG.info("Επιλογή Περιφέρειας σχολείου");
         By schoolRegion = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(2) > div > div > div > div");
-        wait.until(ExpectedConditions.elementToBeClickable(schoolRegion));
         driver.findElement(schoolRegion).click();
+        Thread.sleep(customWait);
 
-        Thread.sleep(500L);
-        By schoolRegionOption = By.xpath("//li[text()[contains(.,'" + school[0] + "')]]");
-        wait.until(ExpectedConditions.presenceOfElementLocated(schoolRegionOption));
+        String schoolRegionXpathExpression = String.format(xpathContainsFormat, kid.getSchoolRegion());
+        By schoolRegionOption = By.xpath(schoolRegionXpathExpression);
         driver.findElement(schoolRegionOption).click();
+        Thread.sleep(customWait);
 
-        LOG.info("Choose school region division");
+        LOG.info("Επιλογή Περιφερειακής Ενότητας σχολείου");
         By schoolDivision = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(3) > div > div > div > div");
-        wait.until(ExpectedConditions.elementToBeClickable(schoolDivision));
         driver.findElement(schoolDivision).click();
+        Thread.sleep(customWait);
 
-        Thread.sleep(500L);
-        By schoolDivisionOption = By.xpath("//li[text()[contains(.,'" + school[1] + "')]]");
-        wait.until(ExpectedConditions.presenceOfElementLocated(schoolDivisionOption));
+        String schoolDivisionXpathExpression = String.format(xpathContainsFormat, kid.getSchoolDivision());
+        By schoolDivisionOption = By.xpath(schoolDivisionXpathExpression);
         driver.findElement(schoolDivisionOption).click();
+        Thread.sleep(customWait);
 
-        LOG.info("Choose school municipality");
+        LOG.info("Επιλογή Δήμου σχολείου");
         By schoolMunicipality = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(4) > div > div > div > div");
-        wait.until(ExpectedConditions.elementToBeClickable(schoolMunicipality));
         driver.findElement(schoolMunicipality).click();
+        Thread.sleep(customWait);
 
-        Thread.sleep(500L);
-        By schoolMunicipalityOption = By.xpath("//li[text()[contains(.,'" + school[2] + "')]]");
-        wait.until(ExpectedConditions.presenceOfElementLocated(schoolMunicipalityOption));
+        String schoolMunicipalityXpathExpression = String.format(xpathContainsFormat, kid.getSchoolMunicipality());
+        By schoolMunicipalityOption = By.xpath(schoolMunicipalityXpathExpression);
         driver.findElement(schoolMunicipalityOption).click();
+        Thread.sleep(customWait);
 
-        LOG.info("Choose school category");
+        LOG.info("Επιλογή Κατηγορίας σχολείου");
         By schoolCategory = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(5) > div > div > div > div");
-        wait.until(ExpectedConditions.elementToBeClickable(schoolCategory));
         driver.findElement(schoolCategory).click();
+        Thread.sleep(customWait);
 
-        Thread.sleep(500L);
-        By schoolCategoryOption = By.xpath("//li[text()[contains(.,'" + school[3] + "')]]");
-        wait.until(ExpectedConditions.presenceOfElementLocated(schoolCategoryOption));
+        String schoolCategoryXpathExpression = String.format(xpathContainsFormat, kid.getSchoolCategory());
+        By schoolCategoryOption = By.xpath(schoolCategoryXpathExpression);
         driver.findElement(schoolCategoryOption).click();
+        Thread.sleep(customWait);
 
-        LOG.info("Choose school type");
+        LOG.info("Επιλογή Τύπου σχολείου");
         By schoolType = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(6) > div > div > div > div");
-        wait.until(ExpectedConditions.elementToBeClickable(schoolType));
         driver.findElement(schoolType).click();
+        Thread.sleep(customWait);
 
-        Thread.sleep(500L);
-        By schoolTypeOption = By.xpath("//li[text()[contains(.,'" + school[4] + "')]]");
-        wait.until(ExpectedConditions.presenceOfElementLocated(schoolTypeOption));
+        String schoolTypeXpathExpression = String.format(xpathContainsFormat, kid.getSchoolType());
+        By schoolTypeOption = By.xpath(schoolTypeXpathExpression);
         driver.findElement(schoolTypeOption).click();
+        Thread.sleep(customWait);
 
-        LOG.info("Choose school name");
+        LOG.info("Επιλογή Σχολείου");
         By schoolName = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(7) > div > div > div > div");
-        wait.until(ExpectedConditions.elementToBeClickable(schoolName));
         driver.findElement(schoolName).click();
+        Thread.sleep(customWait);
 
-        Thread.sleep(500L);
-        By schoolNameOption = By.xpath("//li[text()[contains(.,'" + school[5] + "')]]");
-        wait.until(ExpectedConditions.presenceOfElementLocated(schoolNameOption));
+        String schoolNameXpathExpression = String.format(xpathContainsFormat, kid.getSchoolName());
+        By schoolNameOption = By.xpath(schoolNameXpathExpression);
         driver.findElement(schoolNameOption).click();
+        Thread.sleep(customWait);
 
-        LOG.info("Enter kids personal information");
-        driver.findElement(By.name("input_firstname")).sendKeys(kid[0]);
-        driver.findElement(By.name("input_lastname")).sendKeys(kid[1]);
-        driver.findElement(By.name("input_dob-day")).sendKeys(kid[2]);
-        driver.findElement(By.name("input_dob-month")).sendKeys(kid[3]);
-        driver.findElement(By.name("input_dob-year")).sendKeys(kid[4]);
-        driver.findElement(By.name("input_amka")).sendKeys(kid[5]);
+        LOG.info("Εισαγωγή προσωπικών δεδομένων μαθητή");
+        driver.findElement(By.name("input_firstname")).sendKeys(kid.getKidName());
+        driver.findElement(By.name("input_lastname")).sendKeys(kid.getKidSurname());
+        driver.findElement(By.name("input_dob-day")).sendKeys(kid.getKidDayOfBirth());
+        driver.findElement(By.name("input_dob-month")).sendKeys(kid.getKidMonthOfBirth());
+        driver.findElement(By.name("input_dob-year")).sendKeys(kid.getKidYearOfBirth());
+        driver.findElement(By.name("input_amka")).sendKeys(kid.getKidAmka());
 
-        LOG.info("Enter kids COVID test date (today)");
+        LOG.info("Εισαγωγή ημερομηνίας τεστ COVID (σήμερα)");
         LocalDate date = LocalDate.now();
         driver.findElement(By.name("self_test_date-day")).sendKeys(String.valueOf(date.getDayOfMonth()));
         driver.findElement(By.name("self_test_date-month")).sendKeys(String.valueOf(date.getMonthValue()));
         driver.findElement(By.name("self_test_date-year")).sendKeys(String.valueOf(date.getYear()));
 
-        LOG.info("Enter COVID test result (negative)");
+        LOG.info("Εισαγωγή αποτελέσματος COVID (ΑΡΝΗΤΙΚΟ)");
         By covidResult = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(8) > div:nth-child(2) > div > div > div");
-        wait.until(ExpectedConditions.elementToBeClickable(covidResult));
         driver.findElement(covidResult).click();
+        Thread.sleep(customWait);
 
-        Thread.sleep(500L);
         By covidResultOption = By.xpath("//li[text()[contains(.,'ΑΡΝΗΤΙΚΟ')]]");
-        wait.until(ExpectedConditions.presenceOfElementLocated(covidResultOption));
         driver.findElement(covidResultOption).click();
+        Thread.sleep(customWait);
 
-//        LOG.info("Submit form");
-//        driver.findElement(By.xpath("//div[text()[contains(.,'Υποβολή')]]")).click();
+        if (parsedOptions.isIssue()) {
+            LOG.info("Υποβολή");
+            driver.findElement(By.xpath("//div[text()[contains(.,'Υποβολή')]]")).click();
+            Thread.sleep(customWait);
+            By codeSelector = By.cssSelector("#content > div.MuiContainer-root.jss631.MuiContainer-maxWidthLg > div > div > form > div > div > div > div.MuiGrid-root.mainCol.MuiGrid-item.MuiGrid-grid-md-8 > div.MuiGrid-root.step-web-display.MuiGrid-container.MuiGrid-spacing-xs-2 > div.MuiBox-root.jss742.successBox > div > div:nth-child(3) > h2");
+            String code = driver.findElement(codeSelector).getText();
+            LOG.info("Κωδικός εγγράφου: [{}]", code);
+        }
 
-//        LOG.info("Request print");
-//        By printButton = By.cssSelector("button[label='Εκτύπωση']");
-//        wait.until(ExpectedConditions.elementToBeClickable(printButton));
-//        driver.findElement(printButton).click();
+        if (parsedOptions.isPrint()) {
+            Thread.sleep(customWait);
+            LOG.info("Εκτύπωση");
+            By printButton = By.cssSelector("#content > div.MuiContainer-root.jss631.MuiContainer-maxWidthLg > div > div > form > div > div > div > div.MuiGrid-root.jss737.sideCol.MuiGrid-item.MuiGrid-grid-md-4 > div.MuiGrid-root.MuiGrid-container > div:nth-child(2) > div > button");
+            driver.findElement(printButton).click();
+        }
+
     }
 
-    private WebDriver getDriver() {
-        boolean useGecko = false;
-        if (useGecko) {
+    private WebDriver getDriver(ParsedOptions options) {
+        if (options.isFirefox()) {
             return new FirefoxDriver();
         } else {
             if (System.getenv("CHROME_DRIVER") != null)
@@ -226,14 +211,6 @@ public class SchoolCard {
 
             return new ChromeDriver();
         }
-    }
-
-    private FluentWait<WebDriver> getWait(WebDriver driver) {
-        FluentWait<WebDriver> wait = new FluentWait<>(driver);
-        wait.withTimeout(Duration.of(MAX_WAIT_TIME, ChronoUnit.MILLIS));
-        wait.pollingEvery(Duration.of(100, ChronoUnit.MILLIS));
-        wait.ignoring(NoSuchElementException.class);
-        return wait;
     }
 
 }
