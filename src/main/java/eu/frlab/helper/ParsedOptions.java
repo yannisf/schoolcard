@@ -11,16 +11,18 @@ public class ParsedOptions {
     private final boolean print;
     private final boolean chrome;
     private final boolean firefox;
+    private final boolean verbose;
     private final long wait;
     private final Optional<String> credentials;
     private final Optional<String> kid;
 
-    private ParsedOptions(boolean help, boolean issue, boolean print, boolean chrome, boolean firefox, String wait, String credentials, String kid) {
+    private ParsedOptions(boolean help, boolean issue, boolean print, boolean chrome, boolean firefox, boolean verbose, String wait, String credentials, String kid) {
         this.help = help;
         this.issue = issue || print;
         this.print = print;
         this.chrome = chrome;
         this.firefox = firefox;
+        this.verbose = verbose;
         this.wait = (wait == null || wait.isEmpty()) ? 500 : Long.parseLong(wait);
         this.credentials = Optional.ofNullable(credentials);
         this.kid = Optional.ofNullable(kid);
@@ -44,6 +46,10 @@ public class ParsedOptions {
 
     public boolean isFirefox() {
         return firefox;
+    }
+
+    public boolean isVerbose() {
+        return verbose;
     }
 
     public long getWait() {
@@ -84,6 +90,7 @@ public class ParsedOptions {
                 cmd.hasOption("p"),
                 cmd.hasOption("c") || !cmd.hasOption("f"),
                 cmd.hasOption("f"),
+                cmd.hasOption("v"),
                 cmd.getOptionValue("w"),
                 cmd.getOptionValue("g"),
                 !cmd.getArgList().isEmpty() ? cmd.getArgList().get(0) : null
