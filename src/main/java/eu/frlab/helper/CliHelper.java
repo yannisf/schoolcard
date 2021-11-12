@@ -12,11 +12,11 @@ public class CliHelper {
     public CliHelper(String[] args) {
         Options optionsTemp = new Options();
         optionsTemp.addOption(new Option("h", "help", false, "Εκτύπωση αυτού του μηνύματος"));
-        optionsTemp.addOption(new Option("g", "gsis", true, "Αρχείο με διαπιστευτήρια ΓΓΠΣ (προεπιλογή: $ΗΟΜΕ/.gsis)"));
-        optionsTemp.addOption(new Option("i", "issue", false, "Έκδοση πιστοποιητικού (προεπιλογή: false)"));
-        optionsTemp.addOption(new Option("p", "print", false, "Εκτύπωση πιστοποιητικού, υπονοείται η έκδοση (προεπιλογή: false)"));
+        optionsTemp.addOption(new Option("g", "gsis", true, "Αρχείο με διαπιστευτήρια (κωδικούς) ΓΓΠΣΔΔ (προεπιλογή: $ΗΟΜΕ/.gsis)"));
+        optionsTemp.addOption(new Option("i", "issue", false, "Έκδοση πιστοποιητικού (όχι προεπιλεγμένο)"));
+        optionsTemp.addOption(new Option("p", "print", false, "Εκτύπωση πιστοποιητικού, υπονοείται η έκδοση (όχι προεπιλεγμένο)"));
         optionsTemp.addOption(new Option("f", "firefox", false, "Χρήση Firefox, προαπαιτείται εγκατεστημένος GeckoDriver"));
-        optionsTemp.addOption(new Option("c", "chrome", false, "Χρήση Chrome - προεπιλογή (προαπαιτείται εγκατεστημένος ChromeDriver)"));
+        optionsTemp.addOption(new Option("c", "chrome", false, "Χρήση Chrome, προεπιλογή (προαπαιτείται εγκατεστημένος ChromeDriver)"));
         optionsTemp.addOption(new Option("w", "wait", true, "Αναμονή μεταξύ δικτυακών κλήσεων σε millisecond (προεπιλογή: 500)"));
         optionsTemp.addOption(new Option("v", "verbose", false, "Επιπλέον διαγνωστικές πληροφορίες κατά την εκτέλεση"));
         this.options = optionsTemp;
