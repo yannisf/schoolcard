@@ -167,6 +167,14 @@ public class SchoolCard {
         driver.findElement(By.name("input_dob-year")).sendKeys(kid.getKidYearOfBirth());
         driver.findElement(By.name("input_amka")).sendKeys(kid.getKidAmka());
 
+        By canUseAmka = By.cssSelector("#mui-component-select-can_use_amka");
+        driver.findElement(canUseAmka).click();
+        Thread.sleep(customWait);
+
+        By canUseAmkaOption = By.xpath("//li[text()[contains(.,'ΝΑΙ')]]");
+        driver.findElement(canUseAmkaOption).click();
+        Thread.sleep(customWait);
+
         if (parsedOptions.isVerbose()) LOG.info("Εισαγωγή ημερομηνίας τεστ COVID (σήμερα)");
         LocalDate date = LocalDate.now();
         driver.findElement(By.name("self_test_date-day")).sendKeys(String.valueOf(date.getDayOfMonth()));
