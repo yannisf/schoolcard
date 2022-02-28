@@ -6,7 +6,7 @@
 
     <groupId>eu.frlab</groupId>
     <artifactId>schoolcard</artifactId>
-    <version>3.3-SNAPSHOT</version>
+    <version>3.3</version>
 
     <name>SchoolCard</name>
 
@@ -14,8 +14,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <slf4j-simple.version>1.7.32</slf4j-simple.version>
-        <selenium.version>4.1.1</selenium.version>
+        <slf4j-simple.version>1.7.36</slf4j-simple.version>
+        <selenium.version>4.1.2</selenium.version>
     </properties>
 
     <dependencies>

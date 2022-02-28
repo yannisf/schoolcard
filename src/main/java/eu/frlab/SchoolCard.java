@@ -100,7 +100,7 @@ public class SchoolCard {
         String xpathContainsFormat = "//li[text()[contains(.,'%s')]]";
 
         if (parsedOptions.isVerbose()) LOG.info("Επιλογή Περιφέρειας σχολείου");
-        By schoolRegion = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(2) > div > div > div > div");
+        By schoolRegion = By.cssSelector("#content > div.MuiContainer-root.jss270.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(2) > div > div > div > div");
         driver.findElement(schoolRegion).click();
         Thread.sleep(customWait);
 
@@ -110,7 +110,7 @@ public class SchoolCard {
         Thread.sleep(customWait);
 
         if (parsedOptions.isVerbose()) LOG.info("Επιλογή Περιφερειακής Ενότητας σχολείου");
-        By schoolDivision = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(3) > div > div > div > div");
+        By schoolDivision = By.cssSelector("#content > div.MuiContainer-root.jss270.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(3) > div > div > div > div");
         driver.findElement(schoolDivision).click();
         Thread.sleep(customWait);
 
@@ -120,7 +120,7 @@ public class SchoolCard {
         Thread.sleep(customWait);
 
         if (parsedOptions.isVerbose()) LOG.info("Επιλογή Δήμου σχολείου");
-        By schoolMunicipality = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(4) > div > div > div > div");
+        By schoolMunicipality = By.cssSelector("#content > div.MuiContainer-root.jss270.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(4) > div > div > div > div");
         driver.findElement(schoolMunicipality).click();
         Thread.sleep(customWait);
 
@@ -130,7 +130,7 @@ public class SchoolCard {
         Thread.sleep(customWait);
 
         if (parsedOptions.isVerbose()) LOG.info("Επιλογή Κατηγορίας σχολείου");
-        By schoolCategory = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(5) > div > div > div > div");
+        By schoolCategory = By.cssSelector("#content > div.MuiContainer-root.jss270.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(5) > div > div > div > div");
         driver.findElement(schoolCategory).click();
         Thread.sleep(customWait);
 
@@ -140,7 +140,7 @@ public class SchoolCard {
         Thread.sleep(customWait);
 
         if (parsedOptions.isVerbose()) LOG.info("Επιλογή Τύπου σχολείου");
-        By schoolType = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(6) > div > div > div > div");
+        By schoolType = By.cssSelector("#content > div.MuiContainer-root.jss270.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(6) > div > div > div > div");
         driver.findElement(schoolType).click();
         Thread.sleep(customWait);
 
@@ -150,7 +150,7 @@ public class SchoolCard {
         Thread.sleep(customWait);
 
         if (parsedOptions.isVerbose()) LOG.info("Επιλογή Σχολείου");
-        By schoolName = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(7) > div > div > div > div");
+        By schoolName = By.cssSelector("#content > div.MuiContainer-root.jss270.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(4) > div > div > div:nth-child(7) > div > div > div > div");
         driver.findElement(schoolName).click();
         Thread.sleep(customWait);
 
@@ -182,7 +182,7 @@ public class SchoolCard {
         driver.findElement(By.name("self_test_date-year")).sendKeys(String.valueOf(date.getYear()));
 
         if (parsedOptions.isVerbose()) LOG.info("Εισαγωγή αποτελέσματος COVID (ΑΡΝΗΤΙΚΟ)");
-        By covidResult = By.cssSelector("#content > div.MuiContainer-root.jss269.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(8) > div:nth-child(2) > div > div > div");
+        By covidResult = By.cssSelector("#content > div.MuiContainer-root.jss270.MuiContainer-maxWidthLg > div > div > form > div > div > div:nth-child(8) > div:nth-child(2) > div > div > div");
         driver.findElement(covidResult).click();
         Thread.sleep(customWait);
 
@@ -194,7 +194,7 @@ public class SchoolCard {
             if (parsedOptions.isVerbose()) LOG.info("Υποβολή");
             driver.findElement(By.xpath("//div[text()[contains(.,'Υποβολή')]]")).click();
             Thread.sleep(customWait);
-            By codeSelector = By.cssSelector("#content > div.MuiContainer-root.jss631.MuiContainer-maxWidthLg > div > div > form > div > div > div > div.MuiGrid-root.mainCol.MuiGrid-item.MuiGrid-grid-md-8 > div.MuiGrid-root.step-web-display.MuiGrid-container.MuiGrid-spacing-xs-2 > div.MuiBox-root.jss742.successBox > div > div:nth-child(3) > h2");
+            By codeSelector = By.cssSelector("#content > div.MuiContainer-root.jss629.MuiContainer-maxWidthLg > div > div > form > div > div > div > div.MuiGrid-root.jss735.sideCol.MuiGrid-item.MuiGrid-grid-md-4 > div:nth-child(2) > p");
             String code = driver.findElement(codeSelector).getText();
             LOG.info("Κωδικός εγγράφου: [{}]", code);
         }
@@ -202,7 +202,7 @@ public class SchoolCard {
         if (parsedOptions.isPrint()) {
             Thread.sleep(customWait);
             if (parsedOptions.isVerbose()) LOG.info("Εκτύπωση");
-            By printButton = By.cssSelector("#content > div.MuiContainer-root.jss631.MuiContainer-maxWidthLg > div > div > form > div > div > div > div.MuiGrid-root.jss737.sideCol.MuiGrid-item.MuiGrid-grid-md-4 > div.MuiGrid-root.MuiGrid-container > div:nth-child(2) > div > button");
+            By printButton = By.cssSelector("#content > div.MuiContainer-root.jss629.MuiContainer-maxWidthLg > div > div > form > div > div > div > div.MuiGrid-root.jss735.sideCol.MuiGrid-item.MuiGrid-grid-md-4 > div.MuiGrid-root.MuiGrid-container > div:nth-child(2) > div > button");
             driver.findElement(printButton).click();
         }
 

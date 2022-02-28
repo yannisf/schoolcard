@@ -10,7 +10,7 @@
 και η εγκατάσταση του [ChromeDriver](https://chromedriver.chromium.org/downloads)
 ή του [GeckoDriver](https://github.com/mozilla/geckodriver/releases).
 
-Μπορείτε να κατεβάσετε ένα προετοιμασμένο εκτελέσιμο εδω: https://github.com/yannisf/schoolcard/releases/download/v3.2/schoolcard.jar
+Μπορείτε να κατεβάσετε ένα προετοιμασμένο εκτελέσιμο εδω: https://github.com/yannisf/schoolcard/releases/download/v3.3/schoolcard.jar
 
 **Σημαντικό**: Τα προσωπικά δεδομένα σας και του παιδιού μένουν **ΠΑΝΤΑ** στον υπολογιστή σας και δεν αποθηκεύονται 
 σε καμιά περίπτωση **ΠΟΥΘΕΝΑ** αλλού. Ο κώδικας είναι ανοιχτός, μπορεί να επιθεωρηθεί σχετικά και να χτιστεί τοπικά.
