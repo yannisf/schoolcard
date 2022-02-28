@@ -6,7 +6,7 @@
 
     <groupId>eu.frlab</groupId>
     <artifactId>schoolcard</artifactId>
-    <version>3.3</version>
+    <version>3.4-SNAPSHOT</version>
 
     <name>SchoolCard</name>
 
